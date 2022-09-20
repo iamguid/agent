@@ -3,6 +3,5 @@
 /// More dartdocs go here.
 library agent_core;
 
-export 'src/agent_core_base.dart';
-
-// TODO: Export any libraries intended for clients of this package.
+export 'src/agent.dart';
+export 'src/state_agent.dart';
