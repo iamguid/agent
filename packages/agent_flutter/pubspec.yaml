@@ -1,14 +1,13 @@
 name: agent_flutter
-description: A starting point for Dart libraries or applications.
-version: 1.0.0
-# homepage: https://www.example.com
+description: Agent library integrated to flutter environment.
+version: 0.1.0
+homepage: https://github.com/iamguid/agent
 
 environment:
   sdk: '>=2.18.0 <3.0.0'
 
 dependencies:
-  agent_core:
-    path: ../agent_core
+  agent_core: ^0.1.0
   provider: ^6.0.3
   flutter:
     sdk: flutter
