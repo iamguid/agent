@@ -1,6 +1,6 @@
 name: agent_flutter
 description: Agent library integrated to flutter environment.
-version: 0.1.0
+version: 0.1.1
 homepage: https://github.com/iamguid/agent
 
 environment:
