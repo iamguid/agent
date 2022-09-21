@@ -1,81 +1,97 @@
 import 'dart:async';
 
-part 'agent_abstract.dart';
+import 'abstract.dart';
 
-abstract class Agent<Event extends Object?> extends Connectable<Event, Agent>
-    implements Dispatchable<Event>, Eventable<Event> {
-  final Set<Agent> _connections = {};
-  final Map<EventStreamable, StreamSubscription> _subscriptions = {};
-  late StreamController<Event> _eventsStreamController;
+abstract class Agent<Event> implements BaseAgent<Event>, Eventful<Event> {
+  final Set<Eventful> _listenersSet = {};
+  final Set<CanStoreListeners<CanHandleEvents>> _connectionsSet = {};
+  final Set<Event> _dispatchTickEvents = {};
+  final StreamController<Event> _eventsStreamController =
+      StreamController.broadcast(sync: true);
 
   @override
   late Stream<Event> eventsStream;
 
   Agent() {
-    _eventsStreamController = StreamController.broadcast(sync: true);
     eventsStream = _eventsStreamController.stream;
   }
 
   @override
-  void subscribeTo(EventStreamable target) {
-    if (_subscriptions.containsKey(target)) {
-      throw Exception('Target is already subscribed');
-    }
-
-    final subscription = target.eventsStream.listen(onEvent);
-    _subscriptions[target] = subscription;
-  }
-
-  @override
-  void unsubscribeFrom(EventStreamable target) {
-    if (!_subscriptions.containsKey(target)) {
-      throw Exception('Target is not subscribed');
-    }
-
-    final subscription = _subscriptions[target]!;
-    subscription.cancel();
-
-    _subscriptions.remove(target);
-  }
-
-  @override
-  void connectWith(Agent target) {
-    if (_connections.contains(target)) {
-      throw Exception('Agent is already conected');
-    }
-
-    subscribeTo(target);
-    target.subscribeTo(this);
-    _connections.add(target);
-  }
-
-  @override
-  void disconnectWith(Agent target) {
-    if (!_connections.contains(target)) {
-      throw Exception('Agent is not conected');
-    }
-
-    unsubscribeFrom(target);
-    target.unsubscribeFrom(this);
-    _connections.remove(target);
-  }
-
-  @override
   void dispatch(Event event) {
+    if (_dispatchTickEvents.contains(event)) {
+      return;
+    }
+
+    _dispatchTickEvents.add(event);
+
     _eventsStreamController.add(event);
+    onEvent(event);
+
+    for (var listener in _listenersSet) {
+      listener.dispatch(event);
+    }
+
+    _dispatchTickEvents.clear();
   }
 
   @override
-  void onEvent(dynamic event);
+  void addEventListener(Eventful target) {
+    assert(
+      !_listenersSet.contains(target),
+      'Agent already listen the target',
+    );
 
-  void disconnectFromAll() {
-    for (var connection in _connections) {
-      disconnectWith(connection);
-      _subscriptions.remove(connection);
+    _listenersSet.add(target);
+  }
+
+  @override
+  void removeEventListener(Eventful target) {
+    assert(
+      _listenersSet.contains(target),
+      'Agent is not connected to the target',
+    );
+
+    _listenersSet.remove(target);
+  }
+
+  @override
+  void connect(CanStoreListeners target) {
+    assert(
+      !_connectionsSet.contains(target),
+      'Agent already connected to the target',
+    );
+
+    assert(
+      target != this,
+      'You cannot connect agent with self',
+    );
+
+    target.addEventListener(this);
+    _connectionsSet.add(target);
+  }
+
+  @override
+  void disconnect(CanStoreListeners target) {
+    assert(
+      _connectionsSet.contains(target),
+      'Agent is not connected to the target',
+    );
+
+    target.removeEventListener(this);
+    _connectionsSet.remove(target);
+  }
+
+  void disconnectAll() {
+    for (var connection in _connectionsSet) {
+      disconnect(connection);
     }
   }
 
-  List<Agent> get connections {
-    return _connections.toList();
+  List<CanStoreListeners> get connections {
+    return _connectionsSet.toList();
+  }
+
+  List<Eventful> get listeners {
+    return _listenersSet.toList();
   }
 }

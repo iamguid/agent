@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sweetbook/src/agent/agent_provider.dart';
+
+import 'agent_provider.dart';
 
 /// Merges multiple [AgentProvider] widgets into one widget tree.
 ///

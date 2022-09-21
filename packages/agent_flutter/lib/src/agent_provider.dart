@@ -32,7 +32,7 @@ mixin AgentProviderSingleChildWidget on SingleChildWidget {}
 /// );
 /// ```
 ///
-class AgentProvider<T extends Agent> extends SingleChildStatelessWidget
+class AgentProvider<T extends BaseAgent> extends SingleChildStatelessWidget
     with AgentProviderSingleChildWidget {
   const AgentProvider({
     Key? key,
@@ -108,7 +108,7 @@ class AgentProvider<T extends Agent> extends SingleChildStatelessWidget
           )
         : InheritedProvider<T>(
             create: _create,
-            dispose: (_, agent) => agent.disconnectFromAll(),
+            dispose: (_, agent) => agent.dispose(),
             startListening: _startListening,
             child: child,
             lazy: lazy,
@@ -116,10 +116,10 @@ class AgentProvider<T extends Agent> extends SingleChildStatelessWidget
   }
 
   static VoidCallback _startListening(
-    InheritedContext<Agent?> e,
-    Agent value,
+    InheritedContext<BaseAgent?> e,
+    BaseAgent value,
   ) {
-    final subscription = value.subscribeTo(
+    final subscription = value.eventsStream.listen(
       (_) => e.markNeedsNotifyDependents(),
     );
 

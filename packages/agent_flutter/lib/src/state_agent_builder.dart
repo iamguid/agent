@@ -1,8 +1,8 @@
+import 'package:agent_core/agent_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:sweetbook/src/agent/state_agent_listener.dart';
 
-import 'agent_abstract.dart';
+import 'state_agent_listener.dart';
 
 /// Signature for the `builder` function which takes the `BuildContext` and
 /// [state] and is responsible for returning a widget which is to be rendered.

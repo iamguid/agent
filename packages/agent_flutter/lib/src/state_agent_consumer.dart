@@ -1,8 +1,9 @@
+import 'package:agent_core/agent_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
-import 'package:sweetbook/src/agent/agent_abstract.dart';
-import 'package:sweetbook/src/agent/state_agent_builder.dart';
-import 'package:sweetbook/src/agent/state_agent_listener.dart';
+
+import 'state_agent_builder.dart';
+import 'state_agent_listener.dart';
 
 /// [StateAgentConsumer] exposes a [builder] and [listener] in order react to new
 /// states.

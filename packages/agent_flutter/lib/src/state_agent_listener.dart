@@ -1,9 +1,9 @@
 import 'dart:async';
 
+import 'package:agent_core/agent_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
-import 'package:sweetbook/src/agent/agent_abstract.dart';
 
 /// Mixin which allows `MultiAgentListener` to infer the types
 /// of multiple [StateAgentListener]s.
@@ -192,7 +192,7 @@ class _StateAgentListenerBaseState<A extends Stateful<S>, S>
   }
 
   void _subscribe() {
-    _subscription = _agent.statesStream.listen((state) {
+    _subscription = _agent.stateStream.listen((state) {
       if (widget.listenWhen?.call(_previousState, state) ?? true) {
         widget.listener(context, state);
       }
