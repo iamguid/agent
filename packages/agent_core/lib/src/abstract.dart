@@ -1,5 +1,3 @@
-import 'package:agent_core/agent_core.dart';
-
 /// An object that provides [dispatch] method
 abstract class CanDispatch<Event extends Object?> {
   /// The [dispatch] method used for dispatching [dispatch.event].
@@ -28,11 +26,7 @@ abstract class CanStoreListeners<Target extends CanHandleEvents> {
 }
 
 abstract class Eventful<Event extends Object?>
-    implements
-        CanDispatch<Event>,
-        CanHandleEvents<Event>,
-        HasEventsStream<Event>,
-        CanStoreListeners<Eventful> {}
+    implements CanStoreListeners<BaseAgent> {}
 
 /// An object that provides [connect] and [disconnect] methods.
 abstract class CanConnect<Target extends CanStoreListeners> {
@@ -64,7 +58,7 @@ abstract class Stateful<State>
   /// The [nextState] method.
   /// Needed for set new value to [HasState.state] and pass that state
   /// to [HasStatesStream.stateStream].
-  void nextState(dynamic state);
+  void nextState(State state);
 }
 
 abstract class Disposable {
@@ -73,7 +67,9 @@ abstract class Disposable {
 
 abstract class BaseAgent<Event extends Object?>
     implements
+        HasEventsStream<Event>,
+        CanHandleEvents,
+        CanStoreListeners<BaseAgent>,
         Disposable,
         CanConnect,
-        CanHandleEvents<Event>,
-        HasEventsStream<Event> {}
+        CanDispatch {}

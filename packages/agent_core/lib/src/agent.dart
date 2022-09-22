@@ -3,8 +3,8 @@ import 'dart:async';
 import 'abstract.dart';
 
 abstract class Agent<Event> implements BaseAgent<Event>, Eventful<Event> {
-  final Set<Eventful> _listenersSet = {};
-  final Set<CanStoreListeners<CanHandleEvents>> _connectionsSet = {};
+  final Set<BaseAgent> _listenersSet = {};
+  final Set<CanStoreListeners> _connectionsSet = {};
   final Set<Event> _dispatchTickEvents = {};
   final StreamController<Event> _eventsStreamController =
       StreamController.broadcast(sync: true);
@@ -17,25 +17,25 @@ abstract class Agent<Event> implements BaseAgent<Event>, Eventful<Event> {
   }
 
   @override
-  void dispatch(Event event) {
+  void dispatch(dynamic event) {
     if (_dispatchTickEvents.contains(event)) {
       return;
     }
 
     _dispatchTickEvents.add(event);
 
-    _eventsStreamController.add(event);
-    onEvent(event);
-
     for (var listener in _listenersSet) {
       listener.dispatch(event);
     }
+
+    _eventsStreamController.add(event);
+    onEvent(event);
 
     _dispatchTickEvents.clear();
   }
 
   @override
-  void addEventListener(Eventful target) {
+  void addEventListener(BaseAgent target) {
     assert(
       !_listenersSet.contains(target),
       'Agent already listen the target',
@@ -45,7 +45,7 @@ abstract class Agent<Event> implements BaseAgent<Event>, Eventful<Event> {
   }
 
   @override
-  void removeEventListener(Eventful target) {
+  void removeEventListener(BaseAgent target) {
     assert(
       _listenersSet.contains(target),
       'Agent is not connected to the target',
@@ -81,6 +81,11 @@ abstract class Agent<Event> implements BaseAgent<Event>, Eventful<Event> {
     _connectionsSet.remove(target);
   }
 
+  @override
+  Future<void> dispose() async {
+    disconnectAll();
+  }
+
   void disconnectAll() {
     for (var connection in _connectionsSet) {
       disconnect(connection);
@@ -91,7 +96,7 @@ abstract class Agent<Event> implements BaseAgent<Event>, Eventful<Event> {
     return _connectionsSet.toList();
   }
 
-  List<Eventful> get listeners {
+  List<BaseAgent> get listeners {
     return _listenersSet.toList();
   }
 }

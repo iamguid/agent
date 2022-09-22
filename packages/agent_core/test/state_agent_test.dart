@@ -28,8 +28,10 @@ class TestStateAgent extends StateAgent<TestState, TestEvent> {
   }
 
   @override
-  void onEvent(TestEvent event) {
-    recordedEvents.add(event);
+  void onEvent(event) {
+    if (event is TestEvent) {
+      recordedEvents.add(event);
+    }
   }
 }
 

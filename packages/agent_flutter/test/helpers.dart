@@ -16,8 +16,10 @@ class TestAgent extends Agent<TestEvent> {
   final List<TestEvent> recordedEvents = [];
 
   @override
-  void onEvent(TestEvent event) {
-    recordedEvents.add(event);
+  void onEvent(event) {
+    if (event is TestEvent) {
+      recordedEvents.add(event);
+    }
   }
 
   @override
@@ -41,8 +43,9 @@ class TestStateAgent extends StateAgent<TestState, TestEvent> {
   }
 
   @override
-  void onEvent(TestEvent event) {
-    super.onEvent(event);
-    recordedEvents.add(event);
+  void onEvent(event) {
+    if (event is TestEvent) {
+      recordedEvents.add(event);
+    }
   }
 }
