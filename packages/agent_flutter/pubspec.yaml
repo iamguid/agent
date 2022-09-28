@@ -7,8 +7,7 @@ environment:
   sdk: '>=2.18.0 <3.0.0'
 
 dependencies:
-  agent_core:
-    path: ../agent_core
+  agent_core: ^0.1.2
   provider: ^6.0.3
   flutter:
     sdk: flutter
