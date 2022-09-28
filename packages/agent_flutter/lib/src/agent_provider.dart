@@ -39,7 +39,6 @@ class AgentProvider<T extends BaseAgent> extends SingleChildStatelessWidget
     required Create<T> create,
     this.child,
     this.lazy = true,
-    required List<AgentProviderSingleChildWidget> providers,
   })  : _create = create,
         _value = null,
         super(key: key, child: child);
