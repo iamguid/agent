@@ -20,18 +20,12 @@ class TestStateAgent extends StateAgent<TestState, TestEvent> {
 
   TestStateAgent(super.state) {
     stateSubscription = stateStream.listen((s) => recordedStates.add(s));
+    on<TestEvent>(recordedEvents.add);
   }
 
   @override
   Future<void> dispose() async {
     await stateSubscription.cancel();
-  }
-
-  @override
-  void onEvent(event) {
-    if (event is TestEvent) {
-      recordedEvents.add(event);
-    }
   }
 }
 

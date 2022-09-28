@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:agent_core/agent_core.dart';
 import 'package:test/test.dart';
 
@@ -9,18 +7,10 @@ class TestEvent {
 }
 
 class TestAgent extends Agent<TestEvent> {
-  final List<TestEvent> recordedEvents = [];
+  final List<dynamic> recordedEvents = [];
 
-  @override
-  void onEvent(event) {
-    if (event is TestEvent) {
-      recordedEvents.add(event);
-    }
-  }
-
-  @override
-  Future<void> dispose() async {
-    disconnectAll();
+  TestAgent() {
+    on<TestEvent>(recordedEvents.add);
   }
 }
 

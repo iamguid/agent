@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'abstract.dart';
 
-abstract class Agent<Event> implements BaseAgent<Event>, Eventful<Event> {
+abstract class Agent<Event>
+    implements BaseAgent<Event>, CanStoreListeners<BaseAgent> {
   final Set<BaseAgent> _listenersSet = {};
+  final List<StreamSubscription> _subscriptions = [];
   final Set<CanStoreListeners> _connectionsSet = {};
   final Set<Event> _dispatchTickEvents = {};
   final StreamController<Event> _eventsStreamController =
@@ -17,7 +19,7 @@ abstract class Agent<Event> implements BaseAgent<Event>, Eventful<Event> {
   }
 
   @override
-  void dispatch(dynamic event) {
+  void dispatch<E extends Event>(E event) {
     if (_dispatchTickEvents.contains(event)) {
       return;
     }
@@ -28,7 +30,6 @@ abstract class Agent<Event> implements BaseAgent<Event>, Eventful<Event> {
       listener.dispatch(event);
     }
 
-    _eventsStreamController.add(event);
     onEvent(event);
 
     _dispatchTickEvents.clear();
@@ -82,8 +83,27 @@ abstract class Agent<Event> implements BaseAgent<Event>, Eventful<Event> {
   }
 
   @override
+  void on<E extends Object?>(EventHandler<E> handler) {
+    final subscription =
+        eventsStream.where((event) => event is E).cast<E>().listen(handler);
+
+    _subscriptions.add(subscription);
+  }
+
+  @override
+  void onEvent(dynamic event) {
+    _eventsStreamController.add(event);
+  }
+
+  @override
   Future<void> dispose() async {
     disconnectAll();
+
+    for (var subscription in _subscriptions) {
+      await subscription.cancel();
+    }
+
+    _subscriptions.clear();
   }
 
   void disconnectAll() {
