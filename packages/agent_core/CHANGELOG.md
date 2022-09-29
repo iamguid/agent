@@ -1,3 +1,7 @@
+## 0.1.3
+
+ - Improve API
+
 ## 0.1.2
 
  - Some concept changes
