@@ -1,3 +1,7 @@
+## 0.1.3
+
+ - Bump agent_flutter version
+
 ## 0.1.2
 
  - Some concept changes
