@@ -3,7 +3,8 @@
 /// More dartdocs go here.
 library agent_flutter;
 
-export 'package:agent_core/agent_core.dart' show Agent, StateAgent;
+export 'package:agent_core/agent_core.dart'
+    show Agent, StateAgent, AgentBaseEvent;
 export 'src/agent_provider.dart';
 export 'src/multi_agent_provider.dart';
 export 'src/state_agent_builder.dart';

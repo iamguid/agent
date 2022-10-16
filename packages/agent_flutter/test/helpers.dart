@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:agent_core/agent_core.dart';
 
-class TestEvent {
+class TestEvent extends AgentBaseEvent {
   final int eventId;
   TestEvent(this.eventId);
 }
