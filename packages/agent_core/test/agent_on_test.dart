@@ -1,7 +1,7 @@
 import 'package:agent_core/agent_core.dart';
 import 'package:test/test.dart';
 
-abstract class TestEvent {}
+abstract class TestEvent extends AgentBaseEvent {}
 
 class TestEventA extends TestEvent {}
 

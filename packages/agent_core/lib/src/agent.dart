@@ -2,24 +2,46 @@ import 'dart:async';
 
 import 'abstract.dart';
 
-abstract class Agent<Event>
+abstract class AgentEvent extends AgentBaseEvent {}
+
+class AgentConnected<BaseAgentA, BaseAgentB> extends AgentBaseEvent {
+  final BaseAgentA agentA;
+  final BaseAgentB agentB;
+
+  AgentConnected({
+    required this.agentA,
+    required this.agentB,
+  });
+}
+
+class AgentDisconnected<BaseAgentA, BaseAgentB> extends AgentBaseEvent {
+  final BaseAgentA agentA;
+  final BaseAgentB agentB;
+
+  AgentDisconnected({
+    required this.agentA,
+    required this.agentB,
+  });
+}
+
+abstract class Agent<Event extends AgentBaseEvent>
     implements BaseAgent<Event>, CanStoreListeners<BaseAgent> {
   final Set<BaseAgent> _listenersSet = {};
   final List<StreamSubscription> _subscriptions = [];
-  final Set<CanStoreListeners> _connectionsSet = {};
-  final Set<Event> _dispatchTickEvents = {};
-  final StreamController<Event> _eventsStreamController =
+  final Set<BaseAgent> _connectionsSet = {};
+  final Set<dynamic> _dispatchTickEvents = {};
+  final StreamController<dynamic> _eventsStreamController =
       StreamController.broadcast(sync: true);
 
   @override
-  late Stream<Event> eventsStream;
+  late Stream<dynamic> eventsStream;
 
   Agent() {
     eventsStream = _eventsStreamController.stream;
   }
 
   @override
-  void dispatch<E extends Event>(E event) {
+  void dispatch(event) {
     if (_dispatchTickEvents.contains(event)) {
       return;
     }
@@ -39,9 +61,15 @@ abstract class Agent<Event>
   void addEventListener(BaseAgent target) {
     assert(
       !_listenersSet.contains(target),
-      'Agent already listen the target',
+      'Agent is already listen the target',
     );
 
+    assert(
+      !_connectionsSet.contains(target),
+      'Agent is already connected to the target',
+    );
+
+    _connectionsSet.add(target);
     _listenersSet.add(target);
   }
 
@@ -49,41 +77,41 @@ abstract class Agent<Event>
   void removeEventListener(BaseAgent target) {
     assert(
       _listenersSet.contains(target),
+      'Agent is not listen the target',
+    );
+
+    assert(
+      _connectionsSet.contains(target),
       'Agent is not connected to the target',
     );
 
+    _connectionsSet.remove(target);
     _listenersSet.remove(target);
   }
 
   @override
-  void connect(CanStoreListeners target) {
-    assert(
-      !_connectionsSet.contains(target),
-      'Agent already connected to the target',
-    );
-
+  void connect(BaseAgent target) {
     assert(
       target != this,
       'You cannot connect agent with self',
     );
 
     target.addEventListener(this);
-    _connectionsSet.add(target);
+    addEventListener(target);
+
+    dispatch(AgentConnected(agentA: this, agentB: target));
   }
 
   @override
-  void disconnect(CanStoreListeners target) {
-    assert(
-      _connectionsSet.contains(target),
-      'Agent is not connected to the target',
-    );
+  void disconnect(BaseAgent target) {
+    dispatch(AgentDisconnected(agentA: this, agentB: target));
 
     target.removeEventListener(this);
-    _connectionsSet.remove(target);
+    removeEventListener(target);
   }
 
   @override
-  void on<E extends Object?>(EventHandler<E> handler) {
+  void on<E extends AgentBaseEvent>(EventHandler<E> handler) {
     final subscription =
         eventsStream.where((event) => event is E).cast<E>().listen(handler);
 

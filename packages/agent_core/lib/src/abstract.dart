@@ -1,29 +1,29 @@
 /// An object that provides [dispatch] method
-abstract class CanDispatch<Event extends Object?> {
+abstract class CanDispatch {
   /// The [dispatch] method used for dispatching [dispatch.event].
-  void dispatch<E extends Event>(E event);
+  void dispatch(dynamic event);
 }
 
 /// An event handler is responsible for reacting to an incoming [Event]
-typedef EventHandler<Event extends Object?> = void Function(Event event);
+typedef EventHandler<Event extends AgentBaseEvent> = void Function(Event event);
 
 /// An object that provides [onEvent] and [on] handler
 abstract class CanHandleEvents {
   /// Events handler short syntax.
-  void on<E extends Object?>(EventHandler<E> handler);
+  void on<E extends AgentBaseEvent>(EventHandler<E> handler);
 
   /// Events handler.
   void onEvent(dynamic event);
 }
 
 /// An object that provides access to a stream of events.
-abstract class HasEventsStream<Event extends Object?> {
+abstract class HasEventsStream {
   /// The current [Stream] of events.
-  Stream<Event> get eventsStream;
+  Stream<dynamic> get eventsStream;
 }
 
 /// An object that provides methods for add and remove event listeners
-abstract class CanStoreListeners<Target extends CanHandleEvents> {
+abstract class CanStoreListeners<Target extends BaseAgent> {
   /// Method for adding new listener.
   void addEventListener(Target target);
 
@@ -32,7 +32,7 @@ abstract class CanStoreListeners<Target extends CanHandleEvents> {
 }
 
 /// An object that provides [connect] and [disconnect] methods.
-abstract class CanConnect<Target extends CanStoreListeners> {
+abstract class CanConnect<Target extends BaseAgent> {
   /// Async [connect] method.
   /// Used for subscribe to each other
   void connect(Target target);
@@ -68,11 +68,13 @@ abstract class Disposable {
   Future<void> dispose();
 }
 
-abstract class BaseAgent<Event extends Object?>
+abstract class BaseAgent<Event extends AgentBaseEvent>
     implements
-        CanDispatch<Event>,
-        CanHandleEvents,
-        HasEventsStream<Event>,
         CanStoreListeners<BaseAgent>,
+        CanDispatch,
+        CanHandleEvents,
+        HasEventsStream,
         Disposable,
         CanConnect {}
+
+abstract class AgentBaseEvent {}
