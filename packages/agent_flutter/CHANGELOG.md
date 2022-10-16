@@ -1,3 +1,7 @@
+## 0.2.0
+
+ - Use agent_core v0.2.0
+
 ## 0.1.3
 
  - Bump agent_flutter version
