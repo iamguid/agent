@@ -5,10 +5,14 @@ import 'agent.dart';
 
 abstract class StateAgentEvent extends AgentBaseEvent {}
 
-class StateAgentStateChanged<State> {
+class StateAgentStateChanged<State> extends StateAgentEvent {
   final State state;
+  final StateAgent source;
 
-  StateAgentStateChanged({required this.state});
+  StateAgentStateChanged({
+    required this.state,
+    required this.source,
+  });
 }
 
 abstract class StateAgent<State, Event extends AgentBaseEvent>
@@ -28,7 +32,7 @@ abstract class StateAgent<State, Event extends AgentBaseEvent>
   @override
   void nextState(State state) {
     this.state = state;
-    dispatch(StateAgentStateChanged(state: state));
+    dispatch(StateAgentStateChanged(state: state, source: this));
     _statesStreamController.add(this.state);
   }
 }
