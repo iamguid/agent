@@ -1,3 +1,7 @@
+## 0.2.1
+
+ - Bump "agent_core" to `0.2.1`.
+
 ## 0.2.0
 
  - Some concept changes
