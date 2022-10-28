@@ -29,9 +29,9 @@ abstract class Agent<Event extends AgentBaseEvent>
   final Set<BaseAgent> _listenersSet = {};
   final List<StreamSubscription> _subscriptions = [];
   final Set<BaseAgent> _connectionsSet = {};
-  final Set<dynamic> _dispatchTickEvents = {};
+  final Set<dynamic> _dispatchEventsStack = {};
   final StreamController<dynamic> _eventsStreamController =
-      StreamController.broadcast(sync: true);
+      StreamController.broadcast();
 
   @override
   late Stream<dynamic> eventsStream;
@@ -42,19 +42,19 @@ abstract class Agent<Event extends AgentBaseEvent>
 
   @override
   void dispatch(event) {
-    if (_dispatchTickEvents.contains(event)) {
+    if (_dispatchEventsStack.contains(event)) {
       return;
     }
 
-    _dispatchTickEvents.add(event);
+    _dispatchEventsStack.add(event);
 
     for (var listener in _listenersSet) {
       listener.dispatch(event);
     }
 
-    onEvent(event);
+    Future.microtask(() => onEvent(event));
 
-    _dispatchTickEvents.clear();
+    _dispatchEventsStack.remove(event);
   }
 
   @override
@@ -120,7 +120,9 @@ abstract class Agent<Event extends AgentBaseEvent>
 
   @override
   void onEvent(dynamic event) {
-    _eventsStreamController.add(event);
+    if (!_eventsStreamController.isClosed) {
+      _eventsStreamController.add(event);
+    }
   }
 
   @override
