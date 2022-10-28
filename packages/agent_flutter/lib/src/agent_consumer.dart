@@ -2,9 +2,6 @@ import 'package:agent_core/agent_core.dart';
 import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 
-import 'state_agent_builder.dart';
-import 'state_agent_listener.dart';
-
 /// Signature for the `builder` function which takes the `BuildContext` and
 /// and is responsible for returning a widget which is to be rendered.
 typedef AgentWidgetBuilder<A> = Widget Function(BuildContext context, A agent);

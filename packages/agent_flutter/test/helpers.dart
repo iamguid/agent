@@ -13,25 +13,26 @@ class TestState {
 }
 
 class TestAgent extends Agent<TestEvent> {
-  final List<TestEvent> recordedEvents = [];
+  final List<AgentBaseEvent> recordedEvents = [];
 
   TestAgent() {
-    on<TestEvent>(recordedEvents.add);
+    on<AgentBaseEvent>(recordedEvents.add);
   }
 }
 
 class TestStateAgent extends StateAgent<TestState, TestEvent> {
-  final List<TestEvent> recordedEvents = [];
+  final List<AgentBaseEvent> recordedEvents = [];
   final List<TestState> recordedStates = [];
   late StreamSubscription stateSubscription;
 
   TestStateAgent(super.state) {
+    on<AgentBaseEvent>(recordedEvents.add);
     stateSubscription = stateStream.listen((s) => recordedStates.add(s));
-    on<TestEvent>(recordedEvents.add);
   }
 
   @override
   Future<void> dispose() async {
     await stateSubscription.cancel();
+    await super.dispose();
   }
 }

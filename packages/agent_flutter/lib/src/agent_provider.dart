@@ -101,19 +101,20 @@ class AgentProvider<T extends BaseAgent> extends SingleChildStatelessWidget
     return value != null
         ? InheritedProvider<T>.value(
             value: value,
-            startListening: _startListening,
+            // startListening: _startListening,
             lazy: lazy,
             child: child,
           )
         : InheritedProvider<T>(
             create: _create,
             dispose: (_, agent) => agent.dispose(),
-            startListening: _startListening,
+            // startListening: _startListening,
             child: child,
             lazy: lazy,
           );
   }
 
+  // TODO: Do we need that method?
   static VoidCallback _startListening(
     InheritedContext<BaseAgent?> e,
     BaseAgent value,
