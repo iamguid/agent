@@ -1,6 +1,6 @@
 name: agent_flutter
 description: Agent is not yet another state management library. It is completely new way to manage state and events.
-version: 0.2.2
+version: 0.2.3
 homepage: https://github.com/iamguid/agent
 
 environment:

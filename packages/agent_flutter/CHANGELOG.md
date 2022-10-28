@@ -1,3 +1,7 @@
+## 0.2.3
+
+ - Bump "agent_flutter" to `0.2.3`.
+
 ## 0.2.2
 
  - Improve API
