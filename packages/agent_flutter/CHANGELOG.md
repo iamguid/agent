@@ -1,3 +1,5 @@
+## 0.2.5
+
 ## 0.2.4
 
  - Bump "agent_flutter" to `0.2.4`.
