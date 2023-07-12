@@ -1,3 +1,7 @@
+## 0.3.0
+
+ - Upgrade flutter sdk to v3, fix tests and upgrade dependencies
+
 ## 0.2.2
 
  - Fix bug

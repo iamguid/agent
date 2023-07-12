@@ -31,7 +31,7 @@ abstract class Agent<Event extends AgentBaseEvent>
   final Set<BaseAgent> _connectionsSet = {};
   final Set<dynamic> _dispatchEventsStack = {};
   final StreamController<dynamic> _eventsStreamController =
-      StreamController.broadcast();
+      StreamController.broadcast(sync: true);
 
   @override
   late Stream<dynamic> eventsStream;
@@ -52,7 +52,7 @@ abstract class Agent<Event extends AgentBaseEvent>
       listener.dispatch(event);
     }
 
-    Future.microtask(() => onEvent(event));
+    onEvent(event);
 
     _dispatchEventsStack.remove(event);
   }

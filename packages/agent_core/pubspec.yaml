@@ -1,10 +1,10 @@
 name: agent_core
 description: Agent is not yet another state management library. It is completely new way to manage state and events.
-version: 0.2.2
+version: 0.3.0
 homepage: https://github.com/iamguid/agent
 
 environment:
-  sdk: '>=2.18.0 <3.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dev_dependencies:
   lints: ^2.0.0
