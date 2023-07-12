@@ -1,3 +1,7 @@
+## 0.3.2
+
+ - Export additional classes from agent_flutter
+
 ## 0.3.1
 
  - Fix warnings

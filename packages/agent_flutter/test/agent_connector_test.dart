@@ -1,5 +1,4 @@
 import 'package:agent_flutter/agent_flutter.dart';
-import 'package:agent_flutter/src/agent_connector.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

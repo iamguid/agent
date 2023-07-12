@@ -115,14 +115,14 @@ class AgentProvider<T extends BaseAgent> extends SingleChildStatelessWidget
   }
 
   // TODO: Do we need that method?
-  static VoidCallback _startListening(
-    InheritedContext<BaseAgent?> e,
-    BaseAgent value,
-  ) {
-    final subscription = value.eventsStream.listen(
-      (_) => e.markNeedsNotifyDependents(),
-    );
+  // static VoidCallback _startListening(
+  //   InheritedContext<BaseAgent?> e,
+  //   BaseAgent value,
+  // ) {
+  //   final subscription = value.eventsStream.listen(
+  //     (_) => e.markNeedsNotifyDependents(),
+  //   );
 
-    return subscription.cancel;
-  }
+  //   return subscription.cancel;
+  // }
 }

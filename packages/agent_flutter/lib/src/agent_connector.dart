@@ -2,8 +2,6 @@ import 'package:agent_flutter/agent_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'agent_consumer.dart';
-
 typedef CreateAgent<A extends Agent> = A Function(BuildContext context);
 
 class AgentConnector<A extends Agent> extends StatefulWidget {

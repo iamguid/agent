@@ -15,6 +15,27 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`agent_flutter` - `v0.3.2`](#agent_flutter---v032)
+
+---
+
+#### `agent_flutter` - `v0.3.2`
+
+ - Export additional classes from agent_flutter
+
+
+## 2023-07-12
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`agent_flutter` - `v0.3.1`](#agent_flutter---v031)
 
 ---
