@@ -15,6 +15,27 @@ Packages with breaking changes:
 
 Packages with other changes:
 
+ - [`agent_flutter` - `v0.3.1`](#agent_flutter---v031)
+
+---
+
+#### `agent_flutter` - `v0.3.1`
+
+ - Fix warnings
+
+
+## 2023-07-12
+
+### Changes
+
+---
+
+Packages with breaking changes:
+
+ - There are no breaking changes in this release.
+
+Packages with other changes:
+
  - [`agent_flutter` - `v0.3.0`](#agent_flutter---v030)
 
 ---
