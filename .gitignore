@@ -1,2 +1,9 @@
-.dart_tool
+# Files and directories created by pub.
+.dart_tool/
+.packages
+
+# Conventional directory for build outputs.
+build/
+
+# Misc
 .DS_Store

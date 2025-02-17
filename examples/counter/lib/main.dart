@@ -43,7 +43,7 @@ class _MyAppState extends State<MyApp> {
                 ),
                 Text(
                   '${state.counter}',
-                  style: Theme.of(context).textTheme.headline4,
+                  style: Theme.of(context).textTheme.headlineMedium,
                 ),
               ],
             ),

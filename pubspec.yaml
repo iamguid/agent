@@ -1,6 +1,22 @@
-name: agent
+name: agent_workspace
+publish_to: none
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.6.0 <4.0.0'
+
 dev_dependencies:
-  melos: ^3.1.0
+  melos: ^7.0.0-dev.7
+
+workspace:
+  - packages/agent_core
+  - packages/agent_flutter
+  - examples/counter
+
+melos:
+  scripts:
+    test:
+      run: melos exec -c 6 --fail-fast -- "flutter test"
+      description: Run `flutter test` for a specific package.
+    upgrade:
+      run: melos exec -- "flutter pub upgrade --major-versions"
+      description: Upgrade all packages to the latest version.
