@@ -1,5 +1,5 @@
 name: agent_core
-version: 0.3.0
+version: 0.4.0
 description: Completely new way to manage state and events.
 homepage: https://github.com/iamguid/agent
 resolution: workspace

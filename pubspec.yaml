@@ -20,3 +20,7 @@ melos:
     upgrade:
       run: melos exec -- "flutter pub upgrade --major-versions"
       description: Upgrade all packages to the latest version.
+  command:
+    publish:
+      hooks:
+        pre: melos run test
