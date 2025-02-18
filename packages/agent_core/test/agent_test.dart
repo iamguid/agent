@@ -6,24 +6,33 @@ class TestEvent extends AgentBaseEvent {
   TestEvent(this.eventId);
 }
 
-class TestAgent extends Agent<TestEvent> {
-  final List<dynamic> recordedEvents = [];
+class BroadcastAgent extends Agent {
+  final List<AgentBaseEvent> recordedEvents = [];
 
-  TestAgent() {
-    on<AgentBaseEvent>(recordedEvents.add);
+  BroadcastAgent() {
+    on<AgentBaseEvent>('*', (_, event) => recordedEvents.add(event));
+  }
+}
+
+class TopicAgent extends Agent {
+  final List<AgentBaseEvent> agentRecordedEvents = [];
+  final List<AgentBaseEvent> topicRecordedEvents = [];
+
+  TopicAgent(String topic) {
+    on<AgentBaseEvent>(topic, (_, event) => topicRecordedEvents.add(event));
   }
 }
 
 void main() {
   group('one agent', () {
     test('agent creates correctly', () {
-      final agent = TestAgent();
+      final agent = BroadcastAgent();
       expect(agent.connections.length, 0);
       expect(agent.recordedEvents.length, 0);
     });
 
     test('agent connect with self should throw error', () {
-      final agent = TestAgent();
+      final agent = BroadcastAgent();
 
       expect(
         () => agent.connect(agent),
@@ -34,8 +43,8 @@ void main() {
 
   group('two agents', () {
     test('(agentA <-> agentB) connect and disconnect', () {
-      final agentA = TestAgent();
-      final agentB = TestAgent();
+      final agentA = BroadcastAgent();
+      final agentB = BroadcastAgent();
 
       agentA.connect(agentB);
 
@@ -72,12 +81,12 @@ void main() {
     });
 
     test('(agentA <-> agentB) send and recieve events', () {
-      final agentA = TestAgent();
-      final agentB = TestAgent();
+      final agentA = BroadcastAgent();
+      final agentB = BroadcastAgent();
       final event = TestEvent(0);
 
       agentA.connect(agentB);
-      agentA.dispatch(event);
+      agentA.emit('test', event);
 
       expect(agentA.recordedEvents.length, 2);
       expect(agentA.recordedEvents[1], event);
@@ -88,9 +97,9 @@ void main() {
 
   group('three agents', () {
     test('(agentA <-> agentB <-> agentC) connect and disconnect', () {
-      final agentA = TestAgent();
-      final agentB = TestAgent();
-      final agentC = TestAgent();
+      final agentA = BroadcastAgent();
+      final agentB = BroadcastAgent();
+      final agentC = BroadcastAgent();
 
       agentA.connect(agentB);
       agentB.connect(agentC);
@@ -128,15 +137,15 @@ void main() {
     });
 
     test('(agentA <-> agentB <-> agentC) send and receive events', () {
-      final agentA = TestAgent();
-      final agentB = TestAgent();
-      final agentC = TestAgent();
+      final agentA = BroadcastAgent();
+      final agentB = BroadcastAgent();
+      final agentC = BroadcastAgent();
       final event = TestEvent(0);
 
       agentA.connect(agentB);
       agentB.connect(agentC);
 
-      agentA.dispatch(event);
+      agentA.emit('test', event);
 
       expect(agentA.recordedEvents.length, 3);
       expect(agentA.recordedEvents[2], event);
@@ -153,10 +162,10 @@ void main() {
     test(
         '(agentA <-> agentB, agentA <-> agentC, agentA <-> agentD) connect and disconnect',
         () {
-      final agentA = TestAgent();
-      final agentB = TestAgent();
-      final agentC = TestAgent();
-      final agentD = TestAgent();
+      final agentA = BroadcastAgent();
+      final agentB = BroadcastAgent();
+      final agentC = BroadcastAgent();
+      final agentD = BroadcastAgent();
 
       agentA.connect(agentB);
       agentA.connect(agentC);
@@ -212,17 +221,17 @@ void main() {
     test(
         '(agentA <-> agentB, agentA <-> agentC, agentA <-> agentD) send and receive events',
         () {
-      final agentA = TestAgent();
-      final agentB = TestAgent();
-      final agentC = TestAgent();
-      final agentD = TestAgent();
+      final agentA = BroadcastAgent();
+      final agentB = BroadcastAgent();
+      final agentC = BroadcastAgent();
+      final agentD = BroadcastAgent();
       final event = TestEvent(0);
 
       agentA.connect(agentB);
       agentA.connect(agentC);
       agentA.connect(agentD);
 
-      agentA.dispatch(event);
+      agentA.emit('test', event);
 
       expect(agentA.recordedEvents.length, 4);
       expect(agentA.recordedEvents[3], event);
@@ -240,8 +249,8 @@ void main() {
 
   group('misc', () {
     test('(agentA <-> agentB, agentA <-> agentB) should throws error', () {
-      final agentA = TestAgent();
-      final agentB = TestAgent();
+      final agentA = BroadcastAgent();
+      final agentB = BroadcastAgent();
 
       expect(
         () {
@@ -251,5 +260,20 @@ void main() {
         throwsA(TypeMatcher<AssertionError>()),
       );
     });
+  });
+
+  test('topics', () {
+    final agentA = TopicAgent('topicA');
+    final agentB = TopicAgent('topicA');
+    final agentC = TopicAgent('topicB');
+
+    agentA.connect(agentB);
+    agentA.connect(agentC);
+
+    agentA.emit('topicA', TestEvent(0));
+
+    expect(agentA.topicRecordedEvents.length, 1);
+    expect(agentB.topicRecordedEvents.length, 1);
+    expect(agentC.topicRecordedEvents.length, 0);
   });
 }

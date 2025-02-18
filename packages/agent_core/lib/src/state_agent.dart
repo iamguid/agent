@@ -3,20 +3,7 @@ import 'dart:async';
 import 'abstract.dart';
 import 'agent.dart';
 
-abstract class StateAgentEvent extends AgentBaseEvent {}
-
-class StateAgentStateChanged<State> extends StateAgentEvent {
-  final State state;
-  final StateAgent source;
-
-  StateAgentStateChanged({
-    required this.state,
-    required this.source,
-  });
-}
-
-abstract class StateAgent<State, Event extends AgentBaseEvent>
-    extends Agent<Event> implements Stateful<State> {
+abstract class StateAgent<State> extends Agent implements Stateful<State> {
   late StreamController<State> _statesStreamController;
 
   @override
@@ -24,7 +11,8 @@ abstract class StateAgent<State, Event extends AgentBaseEvent>
 
   @override
   late State state;
-  StateAgent(this.state) : super() {
+
+  StateAgent(this.state) {
     _statesStreamController = StreamController.broadcast(sync: true);
     stateStream = _statesStreamController.stream;
   }
@@ -32,7 +20,7 @@ abstract class StateAgent<State, Event extends AgentBaseEvent>
   @override
   void nextState(State state) {
     this.state = state;
-    dispatch(StateAgentStateChanged(state: state, source: this));
+    emit('agent', AgentStateChanged(state: state, source: this));
     _statesStreamController.add(this.state);
   }
 }

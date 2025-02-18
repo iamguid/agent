@@ -12,21 +12,21 @@ class TestState {
   TestState(this.state);
 }
 
-class TestAgent extends Agent<TestEvent> {
+class TestAgent extends Agent {
   final List<AgentBaseEvent> recordedEvents = [];
 
   TestAgent() {
-    on<AgentBaseEvent>(recordedEvents.add);
+    on<AgentBaseEvent>('*', (_, event) => recordedEvents.add(event));
   }
 }
 
-class TestStateAgent extends StateAgent<TestState, TestEvent> {
+class TestStateAgent extends StateAgent<TestState> {
   final List<AgentBaseEvent> recordedEvents = [];
   final List<TestState> recordedStates = [];
   late StreamSubscription stateSubscription;
 
   TestStateAgent(super.state) {
-    on<AgentBaseEvent>(recordedEvents.add);
+    on<AgentBaseEvent>('*', (_, event) => recordedEvents.add(event));
     stateSubscription = stateStream.listen((s) => recordedStates.add(s));
   }
 

@@ -1,7 +1,4 @@
-/// Support for doing something awesome.
-///
-/// More dartdocs go here.
-library agent_flutter;
+library;
 
 export 'package:agent_core/agent_core.dart'
     show
@@ -10,7 +7,8 @@ export 'package:agent_core/agent_core.dart'
         AgentBaseEvent,
         AgentEvent,
         AgentConnected,
-        AgentDisconnected;
+        AgentDisconnected,
+        AgentStateChanged;
 export 'src/agent_provider.dart';
 export 'src/agent_consumer.dart';
 export 'src/agent_connector.dart';

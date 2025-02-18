@@ -1,3 +1,4 @@
+import 'package:agent_core/agent_core.dart';
 import 'package:agent_flutter/agent_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -26,8 +27,8 @@ class TestParentWidget<AParent extends Agent> extends StatelessWidget {
 
 class TestChildWidget<AParent extends Agent> extends StatefulWidget {
   TestChildWidget({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   createState() => TestChildWidgetState<AParent>();
@@ -35,9 +36,9 @@ class TestChildWidget<AParent extends Agent> extends StatefulWidget {
 
 class TestChildWidgetState<AParent extends Agent>
     extends State<TestChildWidget> {
-  final List<AgentBaseEvent> recordedEvents = [];
+  final List<AgentStreamEvent> recordedEvents = [];
 
-  void onEvent(BuildContext context, AgentBaseEvent event) {
+  void onEvent(BuildContext context, AgentStreamEvent event) {
     recordedEvents.add(event);
   }
 
@@ -69,11 +70,11 @@ void main() {
     final event1 = TestEvent(1);
     final event2 = TestEvent(2);
 
-    parentAgent.dispatch(event1);
-    parentAgent.dispatch(event2);
+    parentAgent.emit('event1', event1);
+    parentAgent.emit('event2', event2);
 
     expect(widgetRecordedEvents.length, 2);
-    expect(widgetRecordedEvents[0], event1);
-    expect(widgetRecordedEvents[1], event2);
+    expect(widgetRecordedEvents[0].$2, event1);
+    expect(widgetRecordedEvents[1].$2, event2);
   });
 }

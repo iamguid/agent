@@ -11,11 +11,11 @@ class TestEventB extends TestEvent {}
 
 class TestEventBA extends TestEventB {}
 
-typedef OnEvent<E> = void Function(E event);
+typedef OnEvent<E extends AgentBaseEvent> = EventHandler<E>;
 
-void defaultOnEvent<E>(E event) {}
+void defaultOnEvent<E extends AgentBaseEvent>(String topic, E event) {}
 
-class TestAgent extends Agent<TestEvent> {
+class TestAgent extends Agent {
   final OnEvent<TestEvent>? onTestEvent;
   final OnEvent<TestEventA>? onTestEventA;
   final OnEvent<TestEventAA>? onTestEventAA;
@@ -28,25 +28,25 @@ class TestAgent extends Agent<TestEvent> {
     this.onTestEventB,
     this.onTestEventAA,
     this.onTestEventBA,
-  }) : super() {
-    on<TestEventA>(onTestEventA ?? defaultOnEvent);
-    on<TestEventB>(onTestEventB ?? defaultOnEvent);
-    on<TestEventAA>(onTestEventAA ?? defaultOnEvent);
-    on<TestEventBA>(onTestEventBA ?? defaultOnEvent);
-    on<TestEvent>(onTestEvent ?? defaultOnEvent);
+  }) {
+    on('test', onTestEventA ?? defaultOnEvent);
+    on('test', onTestEventB ?? defaultOnEvent);
+    on('test', onTestEventAA ?? defaultOnEvent);
+    on('test', onTestEventBA ?? defaultOnEvent);
+    on('test', onTestEvent ?? defaultOnEvent);
   }
 }
 
-class DuplicateHandlerAgent extends Agent<TestEvent> {
-  DuplicateHandlerAgent() : super() {
-    on<TestEvent>(defaultOnEvent);
-    on<TestEvent>(defaultOnEvent);
+class DuplicateHandlerAgent extends Agent {
+  DuplicateHandlerAgent() {
+    on('test', defaultOnEvent);
+    on('test', defaultOnEvent);
   }
 }
 
 void main() {
-  group('on<Event>', () {
-    test('invokes all on<T> when event E is added where E is T', () {
+  group('on<E>', () {
+    test('invokes all on<T> where E is T', () {
       var onEventCallCount = 0;
       var onACallCount = 0;
       var onBCallCount = 0;
@@ -54,14 +54,14 @@ void main() {
       var onBACallCount = 0;
 
       final agent = TestAgent(
-        onTestEvent: (_) => onEventCallCount++,
-        onTestEventA: (_) => onACallCount++,
-        onTestEventB: (_) => onBCallCount++,
-        onTestEventAA: (_) => onAACallCount++,
-        onTestEventBA: (_) => onBACallCount++,
+        onTestEvent: (_, __) => onEventCallCount++,
+        onTestEventA: (_, __) => onACallCount++,
+        onTestEventB: (_, __) => onBCallCount++,
+        onTestEventAA: (_, __) => onAACallCount++,
+        onTestEventBA: (_, __) => onBACallCount++,
       );
 
-      agent.onEvent(TestEventA());
+      agent.onEvent(('test', TestEventA()));
 
       expect(onEventCallCount, equals(1));
       expect(onACallCount, equals(1));
@@ -69,7 +69,7 @@ void main() {
       expect(onAACallCount, equals(0));
       expect(onBACallCount, equals(0));
 
-      agent.onEvent(TestEventAA());
+      agent.onEvent(('test', TestEventAA()));
 
       expect(onEventCallCount, equals(2));
       expect(onACallCount, equals(2));
@@ -77,7 +77,7 @@ void main() {
       expect(onAACallCount, equals(1));
       expect(onBACallCount, equals(0));
 
-      agent.onEvent(TestEventB());
+      agent.onEvent(('test', TestEventB()));
 
       expect(onEventCallCount, equals(3));
       expect(onACallCount, equals(2));
@@ -85,7 +85,7 @@ void main() {
       expect(onAACallCount, equals(1));
       expect(onBACallCount, equals(0));
 
-      agent.onEvent(TestEventBA());
+      agent.onEvent(('test', TestEventBA()));
 
       expect(onEventCallCount, equals(4));
       expect(onACallCount, equals(2));

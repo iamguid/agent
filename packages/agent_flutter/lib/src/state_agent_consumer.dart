@@ -62,13 +62,13 @@ import 'state_agent_listener.dart';
 /// ```
 class StateAgentConsumer<A extends Stateful<S>, S> extends StatefulWidget {
   const StateAgentConsumer({
-    Key? key,
+    super.key,
     required this.builder,
     required this.listener,
     this.agent,
     this.buildWhen,
     this.listenWhen,
-  }) : super(key: key);
+  });
 
   /// The [agent] that the [StateAgentConsumer] will interact with.
   /// If omitted, [StateAgentConsumer] will automatically perform a lookup using

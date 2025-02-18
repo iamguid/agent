@@ -2,59 +2,47 @@ import 'dart:async';
 
 import 'abstract.dart';
 
-abstract class AgentEvent extends AgentBaseEvent {}
-
-class AgentConnected<BaseAgentA, BaseAgentB> extends AgentBaseEvent {
-  final BaseAgentA agentA;
-  final BaseAgentB agentB;
-
-  AgentConnected({
-    required this.agentA,
-    required this.agentB,
-  });
-}
-
-class AgentDisconnected<BaseAgentA, BaseAgentB> extends AgentBaseEvent {
-  final BaseAgentA agentA;
-  final BaseAgentB agentB;
-
-  AgentDisconnected({
-    required this.agentA,
-    required this.agentB,
-  });
-}
-
-abstract class Agent<Event extends AgentBaseEvent>
-    implements BaseAgent<Event>, CanStoreListeners<BaseAgent> {
+/// An agent that listen to events from other agents.
+abstract class Agent implements BaseAgent {
+  final Set<String> _topics = {};
   final Set<BaseAgent> _listenersSet = {};
-  final List<StreamSubscription> _subscriptions = [];
+  final List<StreamSubscription<AgentStreamEvent>> _subscriptions = [];
   final Set<BaseAgent> _connectionsSet = {};
-  final Set<dynamic> _dispatchEventsStack = {};
-  final StreamController<dynamic> _eventsStreamController =
+  final StreamController<AgentStreamEvent> _eventsStreamController =
       StreamController.broadcast(sync: true);
+  final Set<AgentBaseEvent> _emitEventsStack = {};
 
   @override
-  late Stream<dynamic> eventsStream;
+  late Stream<AgentStreamEvent> eventsStream;
 
   Agent() {
     eventsStream = _eventsStreamController.stream;
   }
 
+  /// Emit event to all listeners around that have the same topic.
   @override
-  void dispatch(event) {
-    if (_dispatchEventsStack.contains(event)) {
+  void emit<E extends AgentBaseEvent>(String topic, E event) {
+    if (_emitEventsStack.contains(event)) {
       return;
     }
 
-    _dispatchEventsStack.add(event);
-
-    for (var listener in _listenersSet) {
-      listener.dispatch(event);
+    if (!_topics.contains('*') && !_topics.contains(topic)) {
+      return;
     }
 
-    onEvent(event);
+    _emitEventsStack.add(event);
 
-    _dispatchEventsStack.remove(event);
+    for (var listener in listeners) {
+      listener.emit(topic, event);
+    }
+
+    onEvent((topic, event));
+
+    _emitEventsStack.remove(event);
+  }
+
+  void _listenTopic(String topic) {
+    _topics.add(topic);
   }
 
   @override
@@ -99,27 +87,31 @@ abstract class Agent<Event extends AgentBaseEvent>
     target.addEventListener(this);
     addEventListener(target);
 
-    dispatch(AgentConnected(agentA: this, agentB: target));
+    emit('agent', AgentConnected(agentA: this, agentB: target));
   }
 
   @override
   void disconnect(BaseAgent target) {
-    dispatch(AgentDisconnected(agentA: this, agentB: target));
+    emit('agent', AgentDisconnected(agentA: this, agentB: target));
 
     target.removeEventListener(this);
     removeEventListener(target);
   }
 
   @override
-  void on<E extends AgentBaseEvent>(EventHandler<E> handler) {
-    final subscription =
-        eventsStream.where((event) => event is E).cast<E>().listen(handler);
+  void on<E extends AgentBaseEvent>(String topic, EventHandler<E> handler) {
+    _listenTopic(topic);
+
+    final subscription = eventsStream
+        .where((event) =>
+            (topic == event.$1 || topic == '*') && event.$2 is E)
+        .listen((event) => handler(event.$1, event.$2 as E));
 
     _subscriptions.add(subscription);
   }
 
   @override
-  void onEvent(dynamic event) {
+  void onEvent(AgentStreamEvent event) {
     if (!_eventsStreamController.isClosed) {
       _eventsStreamController.add(event);
     }

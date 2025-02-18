@@ -5,12 +5,17 @@ import 'package:flutter/widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
-typedef AgentWidgetListener<E extends AgentBaseEvent> = void Function(
+/// A function that listens for an [Agent] event.
+typedef AgentWidgetListener<E extends AgentStreamEvent> = void Function(
     BuildContext context, E event);
 
+/// A widget that listens for an [Agent] event.
+///
+/// This widget is used to listen for an [Agent] event.
+/// It will listen for an [Agent] event and call the [listener] function.
 class AgentListener<A extends Agent> extends SingleChildStatefulWidget {
   AgentListener({
-    Key? key,
+    super.key,
     required this.listener,
     this.agent,
     this.child,

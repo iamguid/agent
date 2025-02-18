@@ -13,13 +13,13 @@ class TestState {
   TestState(this.stateId);
 }
 
-class TestStateAgent extends StateAgent<TestState, TestEvent> {
+class TestStateAgent extends StateAgent<TestState> {
   final List<AgentBaseEvent> recordedEvents = [];
   final List<TestState> recordedStates = [];
   late StreamSubscription stateSubscription;
 
   TestStateAgent(super.state) {
-    on<AgentBaseEvent>(recordedEvents.add);
+    on<AgentBaseEvent>('*', (_, event) => recordedEvents.add(event));
     stateSubscription = stateStream.listen((s) => recordedStates.add(s));
   }
 
@@ -90,14 +90,14 @@ void main() {
       stateAgentB.nextState(stateAgentBNewState);
 
       expect(stateAgentA.recordedEvents.length, 3);
-      expect((stateAgentA.recordedEvents[1] as StateAgentStateChanged).state,
+      expect((stateAgentA.recordedEvents[1] as AgentStateChanged).state,
           stateAgentANewState);
-      expect((stateAgentA.recordedEvents[2] as StateAgentStateChanged).state,
+      expect((stateAgentA.recordedEvents[2] as AgentStateChanged).state,
           stateAgentBNewState);
       expect(stateAgentB.recordedEvents.length, 3);
-      expect((stateAgentB.recordedEvents[1] as StateAgentStateChanged).state,
+      expect((stateAgentB.recordedEvents[1] as AgentStateChanged).state,
           stateAgentANewState);
-      expect((stateAgentB.recordedEvents[2] as StateAgentStateChanged).state,
+      expect((stateAgentB.recordedEvents[2] as AgentStateChanged).state,
           stateAgentBNewState);
 
       stateAgentA.disconnect(stateAgentB);
@@ -128,25 +128,25 @@ void main() {
       stateAgentC.nextState(stateAgentCNewState);
 
       expect(stateAgentA.recordedEvents.length, 5);
-      expect((stateAgentA.recordedEvents[2] as StateAgentStateChanged).state,
+      expect((stateAgentA.recordedEvents[2] as AgentStateChanged).state,
           stateAgentANewState);
-      expect((stateAgentA.recordedEvents[3] as StateAgentStateChanged).state,
+      expect((stateAgentA.recordedEvents[3] as AgentStateChanged).state,
           stateAgentBNewState);
-      expect((stateAgentA.recordedEvents[4] as StateAgentStateChanged).state,
+      expect((stateAgentA.recordedEvents[4] as AgentStateChanged).state,
           stateAgentCNewState);
       expect(stateAgentB.recordedEvents.length, 5);
-      expect((stateAgentB.recordedEvents[2] as StateAgentStateChanged).state,
+      expect((stateAgentB.recordedEvents[2] as AgentStateChanged).state,
           stateAgentANewState);
-      expect((stateAgentB.recordedEvents[3] as StateAgentStateChanged).state,
+      expect((stateAgentB.recordedEvents[3] as AgentStateChanged).state,
           stateAgentBNewState);
-      expect((stateAgentB.recordedEvents[4] as StateAgentStateChanged).state,
+      expect((stateAgentB.recordedEvents[4] as AgentStateChanged).state,
           stateAgentCNewState);
       expect(stateAgentC.recordedEvents.length, 4);
-      expect((stateAgentC.recordedEvents[1] as StateAgentStateChanged).state,
+      expect((stateAgentC.recordedEvents[1] as AgentStateChanged).state,
           stateAgentANewState);
-      expect((stateAgentC.recordedEvents[2] as StateAgentStateChanged).state,
+      expect((stateAgentC.recordedEvents[2] as AgentStateChanged).state,
           stateAgentBNewState);
-      expect((stateAgentC.recordedEvents[3] as StateAgentStateChanged).state,
+      expect((stateAgentC.recordedEvents[3] as AgentStateChanged).state,
           stateAgentCNewState);
 
       stateAgentA.disconnect(stateAgentB);

@@ -2,8 +2,14 @@ import 'package:agent_flutter/agent_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+/// A function that creates an [Agent].
 typedef CreateAgent<A extends Agent> = A Function(BuildContext context);
 
+/// A widget that connects an [Agent] to a [BuildContext].
+///
+/// This widget is used to connect an [Agent] to a [BuildContext].
+/// It will create a new [Agent] and connect it to the parent [Agent].
+/// It will also dispose of the child [Agent] when the widget is disposed.
 class AgentConnector<A extends Agent> extends StatefulWidget {
   final CreateAgent createChildAgent;
   final AgentWidgetBuilder build;

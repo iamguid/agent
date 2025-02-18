@@ -1,25 +1,28 @@
-/// An object that provides [dispatch] method
-abstract class CanDispatch {
-  /// The [dispatch] method used for dispatching [dispatch.event].
-  void dispatch(dynamic event);
-}
-
 /// An event handler is responsible for reacting to an incoming [Event]
-typedef EventHandler<Event extends AgentBaseEvent> = void Function(Event event);
+typedef EventHandler<Event extends AgentBaseEvent> = void Function(String topic, Event event);
+
+/// An event that can be emitted by [BaseAgent].
+typedef AgentStreamEvent = (String topic, AgentBaseEvent event);
+
+/// An object that provides [emit] method
+abstract class CanEmit {
+  /// The [emit] method used for emitting [event].
+  void emit<E extends AgentBaseEvent>(String topic, E event);
+}
 
 /// An object that provides [onEvent] and [on] handler
 abstract class CanHandleEvents {
   /// Events handler short syntax.
-  void on<E extends AgentBaseEvent>(EventHandler<E> handler);
+  void on<E extends AgentBaseEvent>(String topic, EventHandler<E> handler);
 
   /// Events handler.
-  void onEvent(dynamic event);
+  void onEvent(AgentStreamEvent event);
 }
 
 /// An object that provides access to a stream of events.
 abstract class HasEventsStream {
   /// The current [Stream] of events.
-  Stream<dynamic> get eventsStream;
+  Stream<AgentStreamEvent> get eventsStream;
 }
 
 /// An object that provides methods for add and remove event listeners
@@ -56,7 +59,7 @@ abstract class HasState<State extends Object?> {
 
 /// An object that implements [HasStatesStream] and [HasState] that provides
 /// [nextState] method.
-abstract class Stateful<State>
+abstract class Stateful<State extends Object?>
     implements HasStatesStream<State>, HasState<State> {
   /// The [nextState] method.
   /// Needed for set new value to [HasState.state] and pass that state
@@ -64,17 +67,59 @@ abstract class Stateful<State>
   void nextState(State state);
 }
 
+/// An object that provides [dispose] method.
 abstract class Disposable {
+  /// The [dispose] method.
   Future<void> dispose();
 }
 
-abstract class BaseAgent<Event extends AgentBaseEvent>
+/// An object that implements [CanStoreListeners], [CanEmit], [CanHandleEvents],
+/// [HasEventsStream], [Disposable], [CanConnect].
+/// [BaseAgent] is a base class for all agents.
+abstract class BaseAgent
     implements
         CanStoreListeners<BaseAgent>,
-        CanDispatch,
+        CanEmit,
         CanHandleEvents,
         HasEventsStream,
         Disposable,
         CanConnect {}
 
+/// An event that can be emitted by [BaseAgent].
 abstract class AgentBaseEvent {}
+
+/// A system event that can be emitted by [Agent].
+abstract class AgentEvent extends AgentBaseEvent {}
+
+/// A system event that can be emitted when [Agent] is connected to another [Agent].
+class AgentConnected<BaseAgentA, BaseAgentB> extends AgentBaseEvent {
+  final BaseAgentA agentA;
+  final BaseAgentB agentB;
+
+  AgentConnected({
+    required this.agentA,
+    required this.agentB,
+  });
+}
+
+/// A system event that can be emitted when [Agent] is disconnected from another [Agent].
+class AgentDisconnected<BaseAgentA, BaseAgentB> extends AgentBaseEvent {
+  final BaseAgentA agentA;
+  final BaseAgentB agentB;
+
+  AgentDisconnected({
+    required this.agentA,
+    required this.agentB,
+  });
+}
+
+/// A system event that can be emitted when [BaseAgent] state is changed.
+class AgentStateChanged<State> extends AgentBaseEvent {
+  final State state;
+  final BaseAgent source;
+
+  AgentStateChanged({
+    required this.state,
+    required this.source,
+  });
+}

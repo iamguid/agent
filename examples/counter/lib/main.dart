@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
           ),
           floatingActionButton: FloatingActionButton(
             onPressed: () =>
-                _counterStateAgent.dispatch(CounterIncrementedEvent()),
+                _counterStateAgent.emit('counter', CounterIncrementedEvent()),
             child: const Icon(Icons.add),
           ),
         ),

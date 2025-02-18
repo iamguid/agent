@@ -79,18 +79,12 @@ class StateAgentListener<A extends Stateful<S>, S>
     extends StateAgentListenerBase<A, S>
     with StateAgentListenerSingleChildWidget {
   const StateAgentListener({
-    Key? key,
-    required StateAgentWidgetListener<S> listener,
-    A? agent,
-    StateAgentListenerCondition<S>? listenWhen,
-    Widget? child,
-  }) : super(
-          key: key,
-          child: child,
-          listener: listener,
-          agent: agent,
-          listenWhen: listenWhen,
-        );
+    super.key,
+    required super.listener,
+    super.agent,
+    super.listenWhen,
+    super.child,
+  });
 }
 
 /// Base class for widgets that listen to state changes in a specified [agent].
@@ -101,12 +95,12 @@ class StateAgentListener<A extends Stateful<S>, S>
 abstract class StateAgentListenerBase<A extends Stateful<S>, S>
     extends SingleChildStatefulWidget {
   const StateAgentListenerBase({
-    Key? key,
+    super.key,
     required this.listener,
     this.agent,
     this.child,
     this.listenWhen,
-  }) : super(key: key, child: child);
+  }) : super(child: child);
 
   /// The widget which will be rendered as a descendant of the
   /// [StateAgentListenerBase].

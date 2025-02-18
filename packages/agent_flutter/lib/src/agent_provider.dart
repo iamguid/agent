@@ -35,22 +35,22 @@ mixin AgentProviderSingleChildWidget on SingleChildWidget {}
 class AgentProvider<T extends BaseAgent> extends SingleChildStatelessWidget
     with AgentProviderSingleChildWidget {
   const AgentProvider({
-    Key? key,
+    super.key,
     required Create<T> create,
     this.child,
     this.lazy = true,
   })  : _create = create,
         _value = null,
-        super(key: key, child: child);
+        super(child: child);
 
   const AgentProvider.value({
-    Key? key,
+    super.key,
     required T value,
     this.child,
   })  : _value = value,
         _create = null,
         lazy = true,
-        super(key: key, child: child);
+        super(child: child);
 
   /// Widget which will have access to the [Agent] or [StateAgent].
   final Widget? child;
@@ -59,8 +59,10 @@ class AgentProvider<T extends BaseAgent> extends SingleChildStatelessWidget
   /// Defaults to `true`.
   final bool lazy;
 
+  /// Function that creates the [Agent] or [StateAgent].
   final Create<T>? _create;
 
+  /// Value of the [Agent] or [StateAgent].
   final T? _value;
 
   /// Method that allows widgets to access a [Agent] or [StateAgent] instance
@@ -101,28 +103,14 @@ class AgentProvider<T extends BaseAgent> extends SingleChildStatelessWidget
     return value != null
         ? InheritedProvider<T>.value(
             value: value,
-            // startListening: _startListening,
             lazy: lazy,
             child: child,
           )
         : InheritedProvider<T>(
             create: _create,
             dispose: (_, agent) => agent.dispose(),
-            // startListening: _startListening,
             child: child,
             lazy: lazy,
           );
   }
-
-  // TODO: Do we need that method?
-  // static VoidCallback _startListening(
-  //   InheritedContext<BaseAgent?> e,
-  //   BaseAgent value,
-  // ) {
-  //   final subscription = value.eventsStream.listen(
-  //     (_) => e.markNeedsNotifyDependents(),
-  //   );
-
-  //   return subscription.cancel;
-  // }
 }

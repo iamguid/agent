@@ -48,8 +48,8 @@ import 'agent_provider.dart';
 /// readability due to the reduction in nesting and boilerplate.
 class MultiAgentProvider extends MultiProvider {
   MultiAgentProvider({
-    Key? key,
-    required List<AgentProviderSingleChildWidget> providers,
-    required Widget child,
-  }) : super(key: key, providers: providers, child: child);
+    super.key,
+    required List<AgentProviderSingleChildWidget> super.providers,
+    required Widget super.child,
+  });
 }

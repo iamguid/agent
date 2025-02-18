@@ -72,11 +72,11 @@ typedef StateAgentBuilderCondition<S> = bool Function(S previous, S current);
 class StateAgentBuilder<A extends Stateful<S>, S>
     extends StateAgentBuilderBase<A, S> {
   const StateAgentBuilder({
-    Key? key,
+    super.key,
     required this.builder,
-    A? agent,
-    StateAgentBuilderCondition<S>? buildWhen,
-  }) : super(key: key, agent: agent, buildWhen: buildWhen);
+    super.agent,
+    super.buildWhen,
+  });
 
   /// The [builder] function which will be invoked on each widget build.
   /// The [builder] takes the `BuildContext` and current `state` and
@@ -96,8 +96,11 @@ class StateAgentBuilder<A extends Stateful<S>, S>
 /// is defined by sub-classes.
 abstract class StateAgentBuilderBase<B extends Stateful<S>, S>
     extends StatefulWidget {
-  const StateAgentBuilderBase({Key? key, this.agent, this.buildWhen})
-      : super(key: key);
+  const StateAgentBuilderBase({
+    super.key,
+    this.agent,
+    this.buildWhen,
+  });
 
   /// The [agent] that the [StateAgentBuilderBase] will interact with.
   /// If omitted, [StateAgentBuilderBase] will automatically perform a lookup using
